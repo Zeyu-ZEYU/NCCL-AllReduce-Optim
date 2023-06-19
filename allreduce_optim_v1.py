@@ -162,7 +162,7 @@ def worker(margs):
 
     # make sure all workers start training at the same time.
     torch.cuda.synchronize()
-    torch.distributed.barrier(torch.distributed.new_group(backend="gloo"))
+    torch.distributed.barrier(torch.distributed.new_group(backend="nccl"))
 
     local_group_0 = torch.distributed.new_group([0, 1, 2, 3], backend="nccl")
     local_group_1 = torch.distributed.new_group([4, 5, 6, 7], backend="nccl")
@@ -209,7 +209,8 @@ def worker(margs):
                 )
                 async_handlers.append(ah)
             for ah in async_handlers:
-                ah.wait()
+                if ah is not None:
+                    ah.wait()
 
             # broadcast final results
             async_handlers = []

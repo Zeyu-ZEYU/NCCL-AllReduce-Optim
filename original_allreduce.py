@@ -162,7 +162,7 @@ def worker(margs):
 
     # make sure all workers start training at the same time.
     torch.cuda.synchronize()
-    torch.distributed.barrier(torch.distributed.new_group(backend="gloo"))
+    torch.distributed.barrier(torch.distributed.new_group(backend="nccl"))
 
     num_iter = 0
     time_start = time.time()
